@@ -1,75 +1,50 @@
 ---
 - name: Install Maven, Git, and Java
   hosts: g1
-  become: yes  
-
+  become: yes
   tasks:
     - name: Check the OS distribution
       debug:
         var: ansible_distribution
 
-    - name: Install Git on CentOS
-      yum:
+    - name: Install Git
+      package:
         name: git
         state: present
-      when: "'CentOS' in ansible_distribution"
-
-    - name: Install Git on Ubuntu
-      apt:
-        name: git
-        state: present
-      when: "'Ubuntu' in ansible_distribution"
-
-    - name: Install Git on Amazon Linux
-      dnf:
-        name: git
-        state: present
-      when: "'Amazon' in ansible_distribution"
+      when: ansible_facts['os_family'] in ['RedHat', 'Debian']
 
     - name: Update APT package manager repositories cache
       command: apt-get update
-      when: "'CentOS' in ansible_distribution or 'Ubuntu' in ansible_distribution"
+      when: ansible_facts['os_family'] == 'Debian'
 
-    - name: Install Apache Maven on Centos, Amazon, Ubuntu
-      become: true
-      get_url: url=https://dlcdn.apache.org/maven/maven-3/3.9.5/binaries/apache-maven-3.9.5-bin.tar.gz
-      when: "'CentOS' in ansible_distribution or 'Ubuntu' in ansible_distribution  or 'Amazon' in ansible_distribution"
+    - name: Install Apache Maven
+      get_url:
+        url: https://dlcdn.apache.org/maven/maven-3/3.9.5/binaries/apache-maven-3.9.5-bin.tar.gz
+        dest: /tmp/apache-maven-3.9.5-bin.tar.gz
+      when: ansible_facts['os_family'] in ['RedHat', 'Debian']
 
     - name: Untar Maven
-      become: true 
-      shell: chdir=/tmp creates=/opt/apache-maven-3.9.5 tar -zxf apache-maven-3.9.5-bin.tar.gz -C /opt
-      when: "'CentOS' in ansible_distribution or 'Ubuntu' in ansible_distribution  or 'Amazon' in ansible_distribution"
+      unarchive:
+        src: /tmp/apache-maven-3.9.5-bin.tar.gz
+        dest: /opt
+        remote_src: yes
+      when: ansible_facts['os_family'] in ['RedHat', 'Debian']
 
     - name: Set MAVEN_HOME
-      become: true
       lineinfile:
         dest: /etc/profile.d/maven.sh
+        line: "{{ item }}"
         create: yes
         state: present
-        mode: '0744'
-        line: '{{ item }}'
-      with_items:
-      - 'export M2_HOME=/opt/apache-maven-3.9.5'
-      - 'export MAVEN_HOME=/opt/apache-maven-3.9.5'
-      - 'export PATH=${M2_HOME}/bin:${PATH}'
-      when: "'CentOS' in ansible_distribution or 'Ubuntu' in ansible_distribution  or 'Amazon' in ansible_distribution"
+      loop:
+        - 'export M2_HOME=/opt/apache-maven-3.9.5'
+        - 'export MAVEN_HOME=/opt/apache-maven-3.9.5'
+        - 'export PATH=${M2_HOME}/bin:${PATH}'
+      when: ansible_facts['os_family'] in ['RedHat', 'Debian']
 
-    - name: Install Java on CentOS
-      yum:
-        name: java-1.8.0-openjdk
+    - name: Install Java
+      package:
+        name: "{{ 'java-1.8.0-openjdk' if ansible_facts['os_family'] == 'RedHat' else 'openjdk-8-jdk' }}"
         state: present
-      when: "'CentOS' in ansible_distribution"
-
-    - name: Install Java on Ubuntu
-      apt:
-        name: openjdk-8-jdk
-        state: present
-      when: "'Ubuntu' in ansible_distribution"
-
-    - name: Install Java on Amazon Linux
-      dnf:
-        name: java-1.8.0-openjdk
-        state: present
-      when: "'Amazon' in ansible_distribution"
 
 ...
