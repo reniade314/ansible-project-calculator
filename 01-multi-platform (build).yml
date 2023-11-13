@@ -1,0 +1,61 @@
+---
+- name: Install Maven, Git, and Java
+  hosts: g1
+  become: yes  
+
+  tasks:
+    - name: Install Git on CentOS
+      yum:
+        name: git
+        state: present
+      when: "'CentOS' in ansible_distribution"
+
+    - name: Install Git on Ubuntu
+      apt:
+        name: git
+        state: present
+      when: "'Ubuntu' in ansible_distribution"
+
+    - name: Install Git on Amazon Linux
+      yum:
+        name: git
+        state: present
+      when: "'Amazon' in ansible_distribution"
+
+    - name: Install Maven on CentOS
+      yum:
+        name: maven
+        state: present
+      when: "'CentOS' in ansible_distribution"
+
+    - name: Install Maven on Ubuntu
+      apt:
+        name: maven
+        state: present
+      when: "'Ubuntu' in ansible_distribution"
+
+    - name: Install Maven on Amazon Linux
+      yum:
+        name: apache-maven
+        state: present
+      when: "'Amazon' in ansible_distribution"
+
+    - name: Install Java on CentOS
+      yum:
+        name: java-1.8.0-openjdk
+        state: present
+      when: "'CentOS' in ansible_distribution"
+
+    - name: Install Java on Ubuntu
+      apt:
+        name: openjdk-8-jdk
+        state: present
+      when: "'Ubuntu' in ansible_distribution"
+
+    - name: Install Java on Amazon Linux
+      yum:
+        name: java-1.8.0-openjdk
+        state: present
+      when: "'Amazon' in ansible_distribution"
+
+...
