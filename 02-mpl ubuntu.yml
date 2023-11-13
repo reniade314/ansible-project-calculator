@@ -38,6 +38,12 @@
         - 'export PATH=${M2_HOME}/bin:${PATH}'
       when: ansible_distribution in ['RedHat', 'Debian']
 
+    - name: Update package cache
+      apt:
+        update_cache: yes
+      when:
+        - ansible_facts['distribution'] == 'Ubuntu'
+
     - name: Install OpenJDK 11
       package:
         name: "{{ java_package }}"
