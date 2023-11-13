@@ -46,7 +46,34 @@
       dnf: 
        update_cache: true
 
-    - name: Install Java using Ansible
-      shell: "amazon-linux-extras install java-openjdk11"
+    - name: Download OpenJDK 11
+      get_url:
+        url: "https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.9_linux-x64_bin.tar.gz"
+        dest: "/tmp/openjdk-11.tar.gz"
+
+    - name: Extract OpenJDK 11
+      ansible.builtin.unarchive:
+        src: "/tmp/openjdk-11.tar.gz"
+        dest: "/opt"
+        remote_src: yes
+        extra_opts: "--strip-components=1"
+      notify:
+        - Set Environment Variables
+
+    - name: Set Environment Variables
+      lineinfile:
+        dest: /etc/environment
+        line: "JAVA_HOME=/opt/jdk-11.0.9"
+        state: present
+      when: not ansible_check_mode
+      notify:
+        - Reload Environment
+      become: yes
+
+    - name: Reload Environment
+      command: ". /etc/environment"
+      when: not ansible_check_mode
+      become: yes
+
 
 ...
