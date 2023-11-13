@@ -7,6 +7,12 @@
       debug:
         var: ansible_distribution
 
+    - name: Install Git on Amazon Linux
+      dnf:
+        name: git
+        state: present
+      when: "'Amazon' in ansible_distribution"
+
     - name: Install Git
       package:
         name: git
