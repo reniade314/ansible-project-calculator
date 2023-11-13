@@ -1,5 +1,5 @@
 ---
-- name: Install Maven, Git, and Java
+- name: Install Git, Apache Maven, and OpenJDK 11
   hosts: g1
   become: yes
   tasks:
@@ -64,15 +64,15 @@
         - Set Environment Variables
       when: "'Amazon' in ansible_distribution"
 
+  handlers:
     - name: Set Environment Variables
       lineinfile:
         dest: /etc/environment
         line: "JAVA_HOME=/opt/amazon-corretto-11"
         state: present
-      when: "'Amazon' in ansible_distribution" 
 
     - name: Reload Environment
       command: ". /etc/environment"
-      when: "'Amazon' in ansible_distribution" 
+      listen: Set Environment Variables
 
 ...
