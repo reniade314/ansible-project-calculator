@@ -13,12 +13,6 @@
         state: present
       when: "'Amazon' in ansible_distribution"
 
-    - name: Install Git
-      package:
-        name: git
-        state: present
-      when: ansible_facts['os_family'] in ['RedHat', 'Debian']
-
     - name: Update APT package manager repositories cache
       command: apt-get update
       when: ansible_facts['os_family'] == 'Debian'
