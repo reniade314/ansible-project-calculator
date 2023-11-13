@@ -73,6 +73,7 @@
 
     - name: Reload Environment
       command: ". /etc/environment"
-      listen: Set Environment Variables
+      when: "'Amazon' in ansible_distribution"
+      become: yes
 
 ...
