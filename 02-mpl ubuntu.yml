@@ -16,7 +16,7 @@
       get_url:
         url: "{{ maven_url }}"
         dest: /tmp/apache-maven-3.9.5-bin.tar.gz
-      when: ansible_distribution = Ubuntu
+      when: ansible_distribution = "Ubuntu"
 
     - name: Untar Maven
       ansible.builtin.unarchive:
