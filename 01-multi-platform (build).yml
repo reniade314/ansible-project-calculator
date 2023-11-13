@@ -27,9 +27,7 @@
       when: "'Amazon' in ansible_distribution"
 
     - name: Update APT package manager repositories cache
-      become: true
-      apt:
-        update_cache: yes
+      command: apt-get update
       when: "'CentOS' in ansible_distribution or 'Ubuntu' in ansible_distribution  or 'Amazon' in ansible_distribution"
 
     - name: Install Apache Maven on Centos, Amazon, Ubuntu
