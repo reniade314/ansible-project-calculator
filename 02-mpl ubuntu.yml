@@ -46,6 +46,6 @@
   vars:
     git_package: git
     maven_url: https://dlcdn.apache.org/maven/maven-3/3.9.5/binaries/apache-maven-3.9.5-bin.tar.gz
-    java_package: java-11-openjdk
+    java_package: openjdk-11-jdk
 
 ...
