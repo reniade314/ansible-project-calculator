@@ -26,23 +26,35 @@
         state: present
       when: "'Amazon' in ansible_distribution"
 
-    - name: Install Maven on CentOS
-      yum:
-        name: maven
-        state: present
-      when: "'CentOS' in ansible_distribution"
-
-    - name: Install Maven on Ubuntu
+    - name: Update APT package manager repositories cache
+      become: true
       apt:
-        name: maven
-        state: present
-      when: "'Ubuntu' in ansible_distribution"
+        update_cache: yes
+      when: "'CentOS' in ansible_distribution or 'Ubuntu' in ansible_distribution  or 'Amazon' in ansible_distribution"
 
-    - name: Install Maven on Amazon Linux
-      dnf:
-        name: apache-maven
+    - name: Install Apache Maven on Centos, Amazon, Ubuntu
+      become: true
+      get_url: url=https://dlcdn.apache.org/maven/maven-3/3.9.5/binaries/apache-maven-3.9.5-bin.tar.gz
+      when: "'CentOS' in ansible_distribution or 'Ubuntu' in ansible_distribution  or 'Amazon' in ansible_distribution"
+
+    - name: Untar Maven
+      become: true 
+      shell: chdir=/tmp creates=/opt/apache-maven-3.9.5 tar -zxf apache-maven-3.9.5-bin.tar.gz -C /opt
+      when: "'CentOS' in ansible_distribution or 'Ubuntu' in ansible_distribution  or 'Amazon' in ansible_distribution"
+
+    - name: Set MAVEN_HOME
+      become: true
+      lineinfile:
+        dest: /etc/profile.d/maven.sh
+        create: yes
         state: present
-      when: "'Amazon' in ansible_distribution"
+        mode: '0744'
+        line: '{{ item }}'
+      with_items:
+      - 'export M2_HOME=/opt/apache-maven-3.9.5'
+      - 'export MAVEN_HOME=/opt/apache-maven-3.9.5'
+      - 'export PATH=${M2_HOME}/bin:${PATH}'
+      when: "'CentOS' in ansible_distribution or 'Ubuntu' in ansible_distribution  or 'Amazon' in ansible_distribution"
 
     - name: Install Java on CentOS
       yum:
