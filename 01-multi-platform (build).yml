@@ -43,7 +43,7 @@
       when: ansible_facts['os_family'] in ['RedHat', 'Debian']
 
     - name: Install Java on Amazon Linux
-      package:
+      yum:
         name: java-1.8.0-openjdk-devel
         state: present
       when: "'Amazon' in ansible_distribution"
