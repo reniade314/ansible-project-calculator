@@ -42,10 +42,13 @@
         - 'export PATH=${M2_HOME}/bin:${PATH}'
       when: ansible_facts['os_family'] in ['RedHat', 'Debian']
 
-    - name: Install Java on Amazon Linux
-      dnf:
-        name: java-11-openjdk
+    - name: Install Java using Ansible
+      become: yes
+      apt:
+        name: "{{ packages }}"
         state: present
-      when: "'Amazon' in ansible_distribution"
+      vars:
+        packages:
+           - openjdk-11-jdk
 
 ...
