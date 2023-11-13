@@ -47,12 +47,6 @@
        update_cache: true
 
     - name: Install Java using Ansible
-      become: yes
-      dnf:
-        name: "{{ packages }}"
-        state: present
-      vars:
-        packages: java-11-openjdk
-
+      shell: "amazon-linux-extras install java-openjdk11"
 
 ...
