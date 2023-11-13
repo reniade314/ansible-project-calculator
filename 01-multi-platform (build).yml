@@ -50,7 +50,7 @@
 
     - name: Download OpenJDK 11
       get_url:
-        url: "https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.9_linux-x64_bin.tar.gz"
+        url: "https://corretto.aws/downloads/latest/amazon-corretto-11-x64-linux-jdk.tar.gz"
         dest: "/tmp/openjdk-11.tar.gz"
       when: "'Amazon' in ansible_distribution"
 
@@ -67,7 +67,7 @@
     - name: Set Environment Variables
       lineinfile:
         dest: /etc/environment
-        line: "JAVA_HOME=/opt/jdk-11.0.9"
+        line: "JAVA_HOME=/opt/amazon-corretto-11"
         state: present
       when: "'Amazon' in ansible_distribution" 
 
