@@ -44,7 +44,7 @@
 
     - name: Install Java on Amazon Linux
       dnf:
-        name: java-1.8.0-openjdk-devel
+        name: java-11-openjdk
         state: present
       when: "'Amazon' in ansible_distribution"
 
