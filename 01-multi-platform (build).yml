@@ -42,6 +42,10 @@
         - 'export PATH=${M2_HOME}/bin:${PATH}'
       when: ansible_facts['os_family'] in ['RedHat', 'Debian']
 
+    - name: Update dnf cache if needed.
+      dnf: 
+       update_cache: true
+
     - name: Install Java using Ansible
       become: yes
       dnf:
