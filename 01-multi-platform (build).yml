@@ -24,10 +24,11 @@
       when: ansible_facts['os_family'] in ['RedHat', 'Debian']
 
     - name: Untar Maven
-      unarchive:
+      ansible.builtin.unarchive:
         src: /tmp/apache-maven-3.9.5-bin.tar.gz
         dest: /opt
         remote_src: yes
+        extra_opts: "--strip-components=1"
       when: ansible_facts['os_family'] in ['RedHat', 'Debian']
 
     - name: Set MAVEN_HOME
@@ -42,14 +43,16 @@
         - 'export PATH=${M2_HOME}/bin:${PATH}'
       when: ansible_facts['os_family'] in ['RedHat', 'Debian']
 
-    - name: Update dnf cache if needed.
-      dnf: 
-       update_cache: true
+    - name: Update dnf cache if needed
+      dnf:
+        update_cache: yes
+      when: "'Amazon' in ansible_distribution"
 
     - name: Download OpenJDK 11
       get_url:
         url: "https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.9_linux-x64_bin.tar.gz"
         dest: "/tmp/openjdk-11.tar.gz"
+      when: "'Amazon' in ansible_distribution"
 
     - name: Extract OpenJDK 11
       ansible.builtin.unarchive:
@@ -59,21 +62,17 @@
         extra_opts: "--strip-components=1"
       notify:
         - Set Environment Variables
+      when: "'Amazon' in ansible_distribution"
 
     - name: Set Environment Variables
       lineinfile:
         dest: /etc/environment
         line: "JAVA_HOME=/opt/jdk-11.0.9"
         state: present
-      when: not ansible_check_mode
-      notify:
-        - Reload Environment
-      become: yes
+      when: "'Amazon' in ansible_distribution" 
 
     - name: Reload Environment
       command: ". /etc/environment"
-      when: not ansible_check_mode
-      become: yes
-
+      when: "'Amazon' in ansible_distribution" 
 
 ...
