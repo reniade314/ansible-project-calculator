@@ -52,7 +52,7 @@
         name: "{{ packages }}"
         state: present
       vars:
-        packages:
-           - java*
+        packages: java-11-openjdk
+
 
 ...
