@@ -28,7 +28,7 @@
 
     - name: Update APT package manager repositories cache
       command: apt-get update
-      when: "'CentOS' in ansible_distribution or 'Ubuntu' in ansible_distribution  or 'Amazon' in ansible_distribution"
+      when: "'CentOS' in ansible_distribution or 'Ubuntu' in ansible_distribution"
 
     - name: Install Apache Maven on Centos, Amazon, Ubuntu
       become: true
