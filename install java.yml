@@ -14,8 +14,8 @@
       command: java -version
       register: java_version_output
       changed_when: false
-      failed_when: >
-       "'11.0.20' not in java_version_output.stderr_lines[0]"
+      failed_when: java_version_output.stderr | regex_search('openjdk version "(\\d+\\.\\d+\\.\\d+)"')
+
 
     - name: Print Java version
       debug:
