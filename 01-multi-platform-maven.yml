@@ -25,7 +25,7 @@
 
     - name: Install Apache Maven on CentOS and Amazon Linux
       get_url:
-        url: https://dlcdn.apache.org/maven/maven-3/3.9.5/binaries/apache-maven-3.9.5-bin.tar.gz
+        url: https://dlcdn.apache.org/maven/maven-3/3.9.5/source/apache-maven-3.9.5-src.tar.gz
         dest: /tmp/apache-maven-3.9.5-bin.tar.gz
       when: "ansible_facts['os_family'] in ['RedHat', 'Debian']"
 
