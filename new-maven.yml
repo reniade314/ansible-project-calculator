@@ -1,6 +1,6 @@
 ---
 - name: Install Maven on CentOS
-  hosts: localhost
+  hosts: t1
   become: yes  # Run tasks with elevated privileges (sudo)
 
   tasks:
