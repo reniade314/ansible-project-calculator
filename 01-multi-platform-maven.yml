@@ -8,7 +8,7 @@
         var: ansible_distribution
 
     - name: Install Git on CentOS
-      dnf:
+      yum:
         name: git
         state: present
       when: "ansible_distribution == 'CentOS'"
