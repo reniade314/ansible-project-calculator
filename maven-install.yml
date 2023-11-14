@@ -37,6 +37,6 @@
 
     - name: Load the MAVEN_HOME environment variable
       become: yes
-      command: . /etc/profile.d/maven.sh
+      command: sudo sh -c '. /etc/profile.d/maven.sh'
 
 ...
