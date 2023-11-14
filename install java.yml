@@ -18,6 +18,6 @@
 
     - name: Print Java version
       debug:
-        msg: "Java version is {{ java_version_output.stdout }}"
+        msg: "Java version is {{ java_version_output.stderr }}"
 
 ...
