@@ -14,8 +14,7 @@
       command: java -version
       register: java_version_output
       changed_when: false
-      failed_when: java_version_output.stderr | regex_search('openjdk version "(\\d+\\.\\d+\\.\\d+)"')
-
+      failed_when: java_version_output.stderr | regex_search('openjdk version "11\.0\.20"')
 
     - name: Print Java version
       debug:
