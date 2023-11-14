@@ -14,8 +14,8 @@
       command: java -version
       register: java_version_output
       changed_when: false
-      failed_when: "'11.' not in java_version_output.stdout or not java_version_output.stdout.startswith('openjdk version \"11.')"
-
+      failed_when: >
+       "'11.0.20' not in java_version_output.stderr_lines[0]"
 
     - name: Print Java version
       debug:
