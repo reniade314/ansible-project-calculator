@@ -36,6 +36,7 @@
         - 'export PATH=${M2_HOME}/bin:${PATH}'
 
     - name: Load the MAVEN_HOME environment variable
+      become: yes
       command: . /etc/profile.d/maven.sh
 
 ...
