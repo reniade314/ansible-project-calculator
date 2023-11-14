@@ -1,5 +1,5 @@
 ---
-name: Install Git
+  name: Install Git
   hosts: g2
   become: yes
   tasks:
