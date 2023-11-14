@@ -1,5 +1,5 @@
 ---
-  name: Install Git
+- name: Install Git
   hosts: g2
   become: yes
   tasks:
@@ -11,18 +11,18 @@
       yum:
         name: git
         state: present
-      when: "ansible_distribution == 'CentOS'"
+      when: "ansible_distribution == 'centos'"
 
     - name: Install Git on Amazon Linux
-      dnf:
+      yum:
         name: git
         state: present
-      when: "ansible_distribution == 'Amazon'"
+      when: "ansible_distribution == 'amazon'"
 
     - name: Install Git on Ubuntu
       apt:
         name: git
         state: present
-      when: "ansible_distribution == 'Ubuntu'"
+      when: "ansible_distribution == 'ubuntu'"
 
-...       
+...
