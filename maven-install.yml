@@ -1,0 +1,45 @@
+---
+- name: Install Apache Maven on CentOS
+  hosts: n1
+  become: yes  # Run tasks with sudo privileges
+
+  tasks:
+    - name: Install required packages
+      package:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - wget
+        - tar
+
+    - name: Download Apache Maven
+      get_url:
+        url: https://downloads.apache.org/maven/maven-3/3.9.5/binaries/apache-maven-3.9.5-bin.tar.gz
+        dest: /tmp/apache-maven-3.9.5-bin.tar.gz
+
+    - name: Extract Maven
+      ansible.builtin.unarchive:
+        src: /tmp/apache-maven-3.9.5-bin.tar.gz
+        dest: /opt
+        remote_src: yes
+        extra_opts: "--strip-components=1"
+
+    - name: Set MAVEN_HOME
+      lineinfile:
+        path: /etc/profile.d/maven.sh
+        line: "{{ item }}"
+        create: yes
+        state: present
+      loop:
+        - 'export M2_HOME=/opt/apache-maven-3.9.5'
+        - 'export MAVEN_HOME=/opt/apache-maven-3.9.5'
+        - 'export PATH=${M2_HOME}/bin:${PATH}'
+
+    - name: Load the MAVEN_HOME environment variable
+      ansible.builtin.command: source /etc/profile.d/maven.sh
+      environment:
+        PATH: "{{ ansible_env.PATH }}"
+      async: 0
+      poll: 0
+
+...
