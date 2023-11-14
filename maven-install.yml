@@ -36,10 +36,6 @@
         - 'export PATH=${M2_HOME}/bin:${PATH}'
 
     - name: Load the MAVEN_HOME environment variable
-      ansible.builtin.command: source /etc/profile.d/maven.sh
-      environment:
-        PATH: "{{ ansible_env.PATH }}"
-      async: 0
-      poll: 0
+      command: . /etc/profile.d/maven.sh
 
 ...
