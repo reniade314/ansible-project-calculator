@@ -1,0 +1,25 @@
+---
+# tasks file for java
+---
+- name: Install Java 11 on CentOS
+  hosts: n1
+  become: yes  # Run tasks with sudo privileges
+
+  tasks:
+    - name: Install Java 11 on CentOS
+      yum:
+        name: java-11-openjdk
+        state: present
+      when: ansible_os_family == 'RedHat'
+    
+    - name: Verify Java installation
+      command: java -version
+      register: java_version_output
+      changed_when: false
+      failed_when: "'11.' not in java_version_output.stdout"  # Verify that the installed version is Java 11
+
+    - name: Print Java version
+      debug:
+        msg: "Java version is {{ java_version_output.stdout }}"
+
+...
