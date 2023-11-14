@@ -1,0 +1,44 @@
+---
+- name: Install Maven on CentOS
+  hosts: localhost
+  become: yes  # Run tasks with elevated privileges (sudo)
+
+  tasks:
+    - name: Install wget (if not already installed)
+      yum:
+        name: wget
+        state: present  # Ensure wget is installed
+
+    - name: Download Apache Maven
+      shell: "wget https://downloads.apache.org/maven/maven-3/3.8.4/binaries/apache-maven-3.8.4-bin.tar.gz -O /tmp/apache-maven-3.8.4-bin.tar.gz"
+      args:
+        creates: /tmp/apache-maven-3.8.4-bin.tar.gz  # Skip download if already present
+
+    - name: Extract Maven archive
+      shell: "tar xzf /tmp/apache-maven-3.8.4-bin.tar.gz -C /opt"
+      args:
+        creates: /opt/apache-maven-3.8.4  # Skip extraction if already present
+
+    - name: Create symbolic link to Maven
+      file:
+        src: /opt/apache-maven-3.8.4
+        dest: /opt/maven
+        state: link
+        force: yes
+
+    - name: Set Maven environment variables
+      lineinfile:
+        path: /etc/profile.d/maven.sh
+        create: yes
+        line: |
+          export MAVEN_HOME=/opt/maven
+          export PATH=${MAVEN_HOME}/bin:${PATH}
+      notify: reload shell environment
+      args:
+        creates: /etc/profile.d/maven.sh  # Skip if already present
+
+  handlers:
+    - name: reload shell environment
+      shell: "exec bash"
+
+...
