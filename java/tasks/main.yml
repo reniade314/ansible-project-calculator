@@ -11,7 +11,7 @@
         name: java-11-openjdk
         state: present
       when: ansible_os_family == 'RedHat'
-    
+
     - name: Verify Java installation
       command: java -version
       register: java_version_output
