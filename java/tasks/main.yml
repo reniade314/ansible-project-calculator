@@ -1,4 +1,5 @@
 ---
+
 - name: Install Java 11 on CentOS
   hosts: n1
   become: yes  # Run tasks with sudo privileges
