@@ -1,11 +1,7 @@
 ---
 - hosts: n5
   become: yes
-  tasks:
-    - name: Shutdown Tomcat service
-      ansible.builtin.command: "/opt/apache-tomcat-7.0.94/bin/shutdown.sh"
-      ignore_errors: yes  # Ignore errors if Tomcat is not running
-
+  
     - name: Download Apache Tomcat
       get_url:
         url: "https://archive.apache.org/dist/tomcat/tomcat-7/v7.0.94/bin/apache-tomcat-7.0.94.tar.gz"
@@ -34,7 +30,7 @@
         msg: "Systemd is {{ 'present' if 'systemd' in ansible_playbook_python | lower else 'not present' }}"
 
     - name: Start Tomcat service
-      ansible.builtin.command: "/opt/apache-tomcat-7.0.94/bin/startup.sh"
+      ansible.builtin.command: "/opt/apache-tomcat-7.0.94/bin/shutdown.sh  &&  /opt/apache-tomcat-7.0.94/bin/startup.sh"
       when: "'systemd' not in ansible_playbook_python | lower"
 
 ...      
