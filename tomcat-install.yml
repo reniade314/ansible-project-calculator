@@ -1,62 +1,62 @@
 ---
-    - name: Check if Apache Tomcat archive already exists
-      ansible.builtin.stat:
-        path: "/opt/apache-tomcat-7.0.94.tar.gz"
-      register: tomcat_archive
+- name: Check if Apache Tomcat archive already exists
+  ansible.builtin.stat:
+    path: "/opt/apache-tomcat-7.0.94.tar.gz"
+  register: tomcat_archive
 
-    - name: Download Apache Tomcat 7.0.94 if not present
-      ansible.builtin.get_url:
-        url: "https://archive.apache.org/dist/tomcat/tomcat-7/v7.0.94/bin/apache-tomcat-7.0.94.tar.gz"
-        dest: "/opt/apache-tomcat-7.0.94.tar.gz"
-      when: not tomcat_archive.stat.exists
+- name: Download Apache Tomcat 7.0.94 if not present
+  ansible.builtin.get_url:
+    url: "https://archive.apache.org/dist/tomcat/tomcat-7/v7.0.94/bin/apache-tomcat-7.0.94.tar.gz"
+    dest: "/opt/apache-tomcat-7.0.94.tar.gz"
+  when: not tomcat_archive.stat.exists
 
-    - name: Extract the Tomcat archive
-      ansible.builtin.command: "tar xvf /opt/apache-tomcat-7.0.94.tar.gz -C /opt/"
-      args:
-        creates: /opt/apache-tomcat-7.0.94/  # Skip extraction if directory already present
+- name: Extract the Tomcat archive
+  ansible.builtin.command: "tar xvf /opt/apache-tomcat-7.0.94.tar.gz -C /opt/"
+  args:
+    creates: /opt/apache-tomcat-7.0.94/  # Skip extraction if directory already present
 
-    - name: Check if /opt/tomcat directory already exists
-      ansible.builtin.stat:
-        path: "/opt/tomcat"
-      register: tomcat_directory
+- name: Check if /opt/tomcat directory already exists
+  ansible.builtin.stat:
+    path: "/opt/tomcat"
+  register: tomcat_directory
 
-    - name: Create /opt/tomcat directory
-      ansible.builtin.file:
-        path: /opt/tomcat
-        state: directory
-      when: not tomcat_directory.stat.exists
-      become: yes
+- name: Create /opt/tomcat directory
+  ansible.builtin.file:
+    path: /opt/tomcat
+    state: directory
+  when: not tomcat_directory.stat.exists
+  become: yes
 
-    - name: Move Tomcat contents to /opt/tomcat
-      ansible.builtin.shell:
-        cmd: "mv /opt/apache-tomcat-7.0.94/* /opt/tomcat/"
-      args:
-        creates: /opt/tomcat/bin/startup.sh  # Skip if files are already present
-      become: yes
+- name: Move Tomcat contents to /opt/tomcat
+  ansible.builtin.shell:
+    cmd: "mv /opt/apache-tomcat-7.0.94/* /opt/tomcat/"
+  args:
+    creates: /opt/tomcat/bin/startup.sh  # Skip if files are already present
+  become: yes
 
-    - name: Set environment variables
-      ansible.builtin.lineinfile:
-        path: "/etc/environment"
-        line: "CATALINA_HOME=/opt/tomcat"
-        create: yes
+- name: Set environment variables
+  ansible.builtin.lineinfile:
+    path: "/etc/environment"
+    line: "CATALINA_HOME=/opt/tomcat"
+    create: yes
 
-    - name: System CTL
-      ansible.builtin.command: "systemctl daemon-reload"
-      become: yes
+- name: System CTL daemon-reload
+  ansible.builtin.command: "systemctl daemon-reload"
+  become: yes
 
-    - name: Debug output for systemd check
-      ansible.builtin.debug:
-        msg: "Systemd is {{ 'present' if 'systemd' in ansible_playbook_python | lower else 'not present' }}"
+- name: Debug output for systemd check
+  ansible.builtin.debug:
+    msg: "Systemd is {{ 'present' if 'systemd' in ansible_playbook_python | lower else 'not present' }}"
 
+- name: Start Tomcat service
+  ansible.builtin.command: "/opt/tomcat/bin/startup.sh"
+  become: yes
+  when: "'systemd' not in ansible_playbook_python | lower"
+  register: startup_result
 
-    - name: Start Tomcat service
-      ansible.builtin.command: "/opt/tomcat/bin/startup.sh"
-      become: yes
-      when: "'systemd' not in ansible_playbook_python | lower"
-      register: startup_result
-    
-    - name: Display startup result
-      ansible.builtin.debug:
-        var: startup_result
-      when: "'systemd' not in ansible_playbook_python | lower"
+- name: Display startup result
+  ansible.builtin.debug:
+    var: startup_result
+  when: "'systemd' not in ansible_playbook_python | lower"
+
 ...
