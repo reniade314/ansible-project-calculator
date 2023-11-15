@@ -1,4 +1,3 @@
----
 - hosts: n5
   become: yes
   tasks:
@@ -29,8 +28,20 @@
       ansible.builtin.debug:
         msg: "Systemd is {{ 'present' if 'systemd' in ansible_playbook_python | lower else 'not present' }}"
 
+    - name: Verify the presence of shutdown.sh
+      ansible.builtin.stat:
+        path: "/opt/apache-tomcat-7.0.94/bin/shutdown.sh"
+      register: shutdown_script
+
+    - name: Add shutdown.sh if not present
+      ansible.builtin.copy:
+        src: "/opt/tomcat/bin/shutdown.sh"
+        dest: "/opt/apache-tomcat-7.0.94/bin/shutdown.sh"
+        mode: '0755'  # Ensure proper permissions
+      when: not shutdown_script.stat.exists
+
     - name: Shutdown and Start Tomcat service
       ansible.builtin.shell: "/opt/apache-tomcat-7.0.94/bin/shutdown.sh && /opt/apache-tomcat-7.0.94/bin/startup.sh"
       when: "'systemd' not in ansible_playbook_python | lower"
 
-...      
+...
