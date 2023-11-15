@@ -37,6 +37,7 @@
       ansible.builtin.copy:
         src: "/opt/tomcat/bin/shutdown.sh"
         dest: "/opt/apache-tomcat-7.0.94/bin/shutdown.sh"
+        remote_src: yes
         mode: '0755'  # Ensure proper permissions
       when: not shutdown_script.stat.exists
 
