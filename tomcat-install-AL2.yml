@@ -1,0 +1,40 @@
+---
+- hosts: n5
+  become: yes
+  tasks:
+    - name: Shutdown Tomcat service
+      ansible.builtin.command: "/opt/apache-tomcat-7.0.94/bin/shutdown.sh"
+      ignore_errors: yes  # Ignore errors if Tomcat is not running
+
+    - name: Download Apache Tomcat
+      get_url:
+        url: "https://archive.apache.org/dist/tomcat/tomcat-7/v7.0.94/bin/apache-tomcat-7.0.94.tar.gz"
+        dest: "/tmp/apache-tomcat-7.0.94.tar.gz"
+
+    - name: Extract Apache Tomcat
+      ansible.builtin.unarchive:
+        src: "/tmp/apache-tomcat-7.0.94.tar.gz"
+        dest: "/opt/"
+        remote_src: yes
+        creates: "/opt/apache-tomcat-7.0.94/"
+
+    - name: Set environment variables
+      ansible.builtin.lineinfile:
+        path: "/etc/environment"
+        line: "CATALINA_HOME=/opt/apache-tomcat-7.0.94"
+        create: yes
+
+    - name: System CTL - Daemon reload
+      ansible.builtin.command: "systemctl daemon-reload"
+      become: yes
+      when: ansible_distribution == 'Amazon'
+
+    - name: Debug output for systemd check
+      ansible.builtin.debug:
+        msg: "Systemd is {{ 'present' if 'systemd' in ansible_playbook_python | lower else 'not present' }}"
+
+    - name: Start Tomcat service
+      ansible.builtin.command: "/opt/apache-tomcat-7.0.94/bin/startup.sh"
+      when: "'systemd' not in ansible_playbook_python | lower"
+
+...      
