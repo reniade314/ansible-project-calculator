@@ -32,3 +32,5 @@
     - name: Shutdown and Start Tomcat service
       ansible.builtin.shell: "/opt/apache-tomcat-7.0.94/bin/shutdown.sh && /opt/apache-tomcat-7.0.94/bin/startup.sh"
       when: "'systemd' not in ansible_playbook_python | lower"
+
+...      
