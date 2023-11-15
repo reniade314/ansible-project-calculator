@@ -2,7 +2,7 @@
   become: yes
   tasks:
     - name: Download Apache Tomcat
-      ansible.builtin.get_url:
+      get_url:
         url: "https://archive.apache.org/dist/tomcat/tomcat-7/v7.0.94/bin/apache-tomcat-7.0.94.tar.gz"
         dest: "/tmp/apache-tomcat-7.0.94.tar.gz"
 
@@ -30,25 +30,16 @@
 
     - name: Verify the presence of shutdown.sh
       ansible.builtin.stat:
-        path: "/opt/apache-tomcat-7.0.94/bin/shutdown.sh"
+        path: "/opt/tomcat/bin/shutdown.sh"
       register: shutdown_script
-
-    - name: Ensure the existence of /opt/apache-tomcat-7.0.94/bin directory
-      ansible.builtin.file:
-        path: "/opt/apache-tomcat-7.0.94/bin"
-        state: directory
-      register: directory_created
 
     - name: Add shutdown.sh if not present
       ansible.builtin.copy:
-        src: "/opt/tomcat/bin/shutdown.sh"
+        src: "/opt/tomcat/bin/shutdown.sh"  # Change the path accordingly
         dest: "/opt/apache-tomcat-7.0.94/bin/shutdown.sh"
         remote_src: yes
         mode: '0755'  # Ensure proper permissions
-      when: 
-        - shutdown_script is not defined or not shutdown_script.stat.exists
-        - directory_created is defined and directory_created.changed
-        - directory_created is defined and directory_created.failed
+      when: not shutdown_script.stat.exists
 
     - name: Shutdown and Start Tomcat service
       ansible.builtin.shell: "/opt/apache-tomcat-7.0.94/bin/shutdown.sh && /opt/apache-tomcat-7.0.94/bin/startup.sh"
