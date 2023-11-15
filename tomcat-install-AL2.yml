@@ -2,7 +2,7 @@
   become: yes
   tasks:
     - name: Download Apache Tomcat
-      get_url:
+      ansible.builtin.get_url:
         url: "https://archive.apache.org/dist/tomcat/tomcat-7/v7.0.94/bin/apache-tomcat-7.0.94.tar.gz"
         dest: "/tmp/apache-tomcat-7.0.94.tar.gz"
 
@@ -28,6 +28,11 @@
       ansible.builtin.debug:
         msg: "Systemd is {{ 'present' if 'systemd' in ansible_playbook_python | lower else 'not present' }}"
 
+    - name: Verify the presence of shutdown.sh
+      ansible.builtin.stat:
+        path: "/opt/apache-tomcat-7.0.94/bin/shutdown.sh"
+      register: shutdown_script
+
     - name: Ensure the existence of /opt/apache-tomcat-7.0.94/bin directory
       ansible.builtin.file:
         path: "/opt/apache-tomcat-7.0.94/bin"
@@ -41,7 +46,7 @@
         remote_src: yes
         mode: '0755'  # Ensure proper permissions
       when: 
-        - not shutdown_script.stat.exists
+        - shutdown_script is not defined or not shutdown_script.stat.exists
         - directory_created is defined and directory_created.changed
         - directory_created is defined and directory_created.failed
 
