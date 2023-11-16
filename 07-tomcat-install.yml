@@ -1,0 +1,98 @@
+---
+- name: Install Apache Tomcat
+  hosts: n5
+  become: true  # Run tasks with sudo
+
+  tasks:
+    - name: Check the OS Distribution
+      debug:
+       var: ansible_distribution
+
+    #- name: Update package cache on CentOS/RHEL
+    - name: Update package cache on CentOS/RHEL
+      yum:
+       update_cache: yes
+      when: ansible_distribution == "RedHat"
+
+    - name: Update package cache on Amazon Linux
+      dnf:
+        update_cache: yes
+        vars:
+         ansible_python_interpreter: /usr/bin/python3
+      when: ansible_python.version.major == 3 and ansible_distribution == "RedHat"
+
+    - name: Install Java on Amazon Linux
+      dnf:
+       name: java-11-amazon-corretto
+       state: present
+      when: ansible_distribution == 'Amazon'
+
+    # Ensure python3-dnf is installed on CentOS/RHEL
+    - name: Install python3-dnf on CentOS/RHEL
+      yum:
+        name: python3-dnf
+        state: present
+      when: ansible_python.version.major == 3 and ansible_distribution == "RedHat"
+
+    - name: Install python3-dnf on Amazon
+      dnf:
+        name: python3-dnf
+        state: present
+      when: ansible_python.version.major == 3 and ansible_distribution == "Amazon"
+
+    # Update package cache using dnf on CentOS/RHEL
+    - name: Update package cache using dnf
+      dnf:
+        name: "*"
+        state: latest
+      when: ansible_python.version.major == 3 and ansible_distribution == "RedHat" and ansible_distribution == 'Amazom'
+
+    - name: Update package cache on Ubuntu
+      apt:
+        update_cache: yes
+      when: ansible_os_family == "Debian"
+
+    - name: Install OpenJDK 11 (headless) 
+      apt:
+        name: openjdk-11-jdk-headless
+        state: present 
+      when: ansible_os_family == "Debian"
+
+    - name: Install Java 11 on CentOS or RedHat
+      yum:
+        name: java-11-openjdk  # You may need to adjust the package name based on your distribution
+        state: present
+      when: ansible_distribution == "RedHat"  or ansible_distribution == "CentOS"
+
+    - name: Download Apache Tomcat
+      get_url: 
+       url: "https://downloads.apache.org/tomcat/tomcat-10/v10.1.16/bin/apache-tomcat-10.1.16.tar.gz"
+                  # Replace with the link to the latest Tomcat version
+       dest: "/tmp/apache-tomcat-10.1.16.tar.gz"
+
+    - name: Extract Tomcat archive
+      ansible.builtin.unarchive:
+        src: "/tmp/apache-tomcat-10.1.16.tar.gz"
+        dest: "/opt"
+        remote_src: yes
+
+    - name: Set Tomcat environment variables
+      lineinfile:
+        path: "/etc/environment"
+        line: "CATALINA_HOME=/opt/apache-tomcat-10.1.16"  # Adjust the path based on your Tomcat version
+      become: true
+
+    - name: System CTL - Daemon reload
+      ansible.builtin.command: "systemctl daemon-reload"
+      become: yes
+      when: ansible_distribution in ['Amazon', 'CentOS']
+
+    - name: Debug output for systemd check
+      ansible.builtin.debug:
+        msg: "Systemd is {{ 'present' if 'systemd' in ansible_playbook_python | lower else 'not present' }}"
+
+    - name: Start Tomcat service
+      ansible.builtin.shell: "nohup /opt/apache-tomcat-10.1.16/bin/startup.sh"
+      when: "'systemd' not in ansible_playbook_python | lower"
+      become: true
+...

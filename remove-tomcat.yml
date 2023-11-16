@@ -1,0 +1,36 @@
+- hosts: n5
+  become: yes
+  tasks:
+    - name: Stop Tomcat service
+      ansible.builtin.service:
+        name: tomcat  # Replace 'tomcat' with the actual Tomcat service name on your system
+        state: stopped
+      ignore_errors: yes  # Ignore errors if the service doesn't exist or is not running
+
+    - name: Remove Tomcat directory
+      ansible.builtin.file:
+        path: /opt/tomcat  # Path to the Tomcat directory
+        state: absent
+      ignore_errors: yes  # Ignore errors if the directory doesn't exist
+
+    - name: Remove Tomcat configuration directory
+      ansible.builtin.file:
+        path: /etc/tomcat  # Path to the Tomcat configuration directory
+        state: absent
+      ignore_errors: yes  # Ignore errors if the directory doesn't exist
+
+    # Add more tasks here to remove any other related directories or files
+
+    - name: Remove Tomcat user
+      ansible.builtin.user:
+        name: tomcat  # Tomcat user name
+        state: absent
+      ignore_errors: yes  # Ignore errors if the user doesn't exist
+
+    - name: Remove Tomcat group
+      ansible.builtin.group:
+        name: tomcat  # Tomcat group name
+        state: absent
+      ignore_errors: yes  # Ignore errors if the group doesn't exist
+
+...
