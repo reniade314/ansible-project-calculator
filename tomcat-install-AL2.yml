@@ -19,6 +19,8 @@
         dest: "/opt/"
         remote_src: yes
         creates: "/opt/apache-tomcat-{{ tomcat_version }}/"
+      vars:
+        tomcat_version: "10.1.16"
 
     - name: Set environment variables
       ansible.builtin.lineinfile:
