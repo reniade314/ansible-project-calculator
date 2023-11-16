@@ -1,5 +1,5 @@
 ---
-- name: Install Apache Tomcat
+- name: Install Apache Tomcat and Java
   hosts: n5
   become: true  # Run tasks with sudo
 
