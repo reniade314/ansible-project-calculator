@@ -1,6 +1,6 @@
 ---
 - name: Install Java
-  hosts: n5
+  hosts: g2
   become: yes
   tasks:
     - name: Check the OS distribution
