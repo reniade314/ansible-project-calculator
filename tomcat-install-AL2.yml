@@ -1,35 +1,34 @@
 - hosts: n5
   become: yes
   tasks:
-    - name: Download Apache Tomcat
-      get_url:
-        url: "https://archive.apache.org/dist/tomcat/tomcat-7/v7.0.94/bin/apache-tomcat-7.0.94.tar.gz"
-        dest: "/tmp/apache-tomcat-7.0.94.tar.gz"
+    - name: Remove existing Tomcat directory if exists
+      ansible.builtin.file:
+        path: /opt/tomcat
+        state: absent
 
-    - name: Extract Apache Tomcat
+    - name: Download latest Tomcat tarball
+      ansible.builtin.get_url:
+        url: "https://downloads.apache.org/tomcat/tomcat-{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
+        dest: "/tmp/apache-tomcat-{{ tomcat_version }}.tar.gz"
+      vars:
+        tomcat_version: "9.0.83"  # Change to the latest version
+
+    - name: Extract Tomcat tarball
       ansible.builtin.unarchive:
-        src: "/tmp/apache-tomcat-7.0.94.tar.gz"
+        src: "/tmp/apache-tomcat-{{ tomcat_version }}.tar.gz"
         dest: "/opt/"
         remote_src: yes
-        creates: "/opt/apache-tomcat-7.0.94/"
+        creates: "/opt/apache-tomcat-{{ tomcat_version }}/"
 
     - name: Set environment variables
       ansible.builtin.lineinfile:
         path: "/etc/environment"
-        line: "CATALINA_HOME=/opt/apache-tomcat-7.0.94"
+        line: "CATALINA_HOME=/opt/apache-tomcat-{{ tomcat_version }}"
         create: yes
 
-    - name: System CTL - Daemon reload
+    - name: Systemd daemon reload
       ansible.builtin.command: "systemctl daemon-reload"
       become: yes
       when: ansible_distribution == 'Amazon'
-
-    - name: Debug output for systemd check
-      ansible.builtin.debug:
-        msg: "Systemd is {{ 'present' if 'systemd' in ansible_playbook_python | lower else 'not present' }}"
-
-    - name: Shutdown and Start Tomcat service
-      ansible.builtin.shell: "/opt/tomcat/bin/shutdown.sh && /opt/tomcat/bin/startup.sh"
-      when: "'systemd' not in ansible_playbook_python | lower"
 
 ...
