@@ -27,6 +27,8 @@
         path: "/etc/environment"
         line: "CATALINA_HOME=/opt/apache-tomcat-{{ tomcat_version }}"
         create: yes
+      vars:
+        tomcat_version: "10.1.16"
 
     - name: Systemd daemon reload
       ansible.builtin.command: "systemctl daemon-reload"
