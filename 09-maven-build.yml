@@ -1,0 +1,16 @@
+---
+- name: Checkout source code
+  git:
+    repo: "https://github.com/kesienaf/mid-project-calc-jenkins.git"
+    dest: "/path/to/checkout"
+    version: "master"
+  tags: 
+    - checkout
+
+- name: Build Maven project
+  command: /opt/maven/bin/mvn clean package
+  args:
+    chdir: "/path/to/checkout"
+  tags: 
+    - build
+...
