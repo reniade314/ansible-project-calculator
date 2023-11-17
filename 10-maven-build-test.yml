@@ -1,0 +1,22 @@
+---
+- name: Build and Test App with Maven
+  hosts: your_target_host  # Replace with your target server or host group
+  become: yes
+
+  vars:
+    project_directory: "/path/to/your/project"  # Update with your project directory
+    maven_command_build: "mvn clean install"  # Customize Maven build command
+    maven_command_test: "mvn test"  # Customize Maven test command
+
+  tasks:
+    - name: Change to project directory
+      ansible.builtin.cd:
+        path: "{{ project_directory }}"
+
+    - name: Run Maven Build
+      ansible.builtin.command: "{{ maven_command_build }}"
+
+    - name: Run Maven Tests
+      ansible.builtin.command: "{{ maven_command_test }}"
+
+...
